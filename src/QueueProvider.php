@@ -77,7 +77,7 @@ class QueueProvider implements QueueProviderInterface
         }
 
         $payload = $this->redis->hget("$this->channelName.messages", $id);
-        if (null === $payload) {
+        if (!is_string($payload)) {
             return null;
         }
         $this->redis->zRem("$this->channelName.reserved", time(), $id);
@@ -100,7 +100,8 @@ class QueueProvider implements QueueProviderInterface
         $now = time();
         $expired = $this->redis->zrevrangebyscore($from, (string) $now, '-inf');
         if (is_array($expired)) {
-            $this->redis->zremrangebyscore($from, '-inf', (string)$now);
+            $this->redis->zremrangebyscore($from, '-inf', (string) $now);
+            /** @var string $id */
             foreach ($expired as $id) {
                 $this->redis->rpush("$this->channelName.waiting", $id);
             }

@@ -86,7 +86,7 @@ class Adapter implements AdapterInterface
         return $adapter;
     }
 
-    private function reserve(): ?MessageInterface
+    private function reserve(): ?IdEnvelope
     {
         $reserve = $this->provider->reserve($this->timeout);
         if (is_null($reserve)) {
