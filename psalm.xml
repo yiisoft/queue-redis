@@ -6,14 +6,12 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    cacheDirectory="vendor/.psalm-cache"
 >
     <projectFiles>
         <directory name="src" />
         <ignoreFiles>
-            <directory name="vendor" />
+            <directory name="vendor"/>
         </ignoreFiles>
     </projectFiles>
-    <issueHandlers>
-        <MixedAssignment errorLevel="suppress" />
-    </issueHandlers>
 </psalm>
