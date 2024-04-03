@@ -8,6 +8,7 @@ use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Enum\JobStatus;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\Message;
+use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\Message\MessageSerializerInterface;
 use Yiisoft\Queue\Queue;
 use Yiisoft\Queue\Redis\Adapter;
@@ -56,6 +57,14 @@ class QueueTest extends UnitTestCase
 
         $status = $adapter->status($message->getId());
         $this->assertEquals(JobStatus::done(), $status);
+
+        $mockReserved = $this->createMock(QueueProviderInterface::class);
+        $mockReserved->method('existInReserved')->willReturn(true);
+        $adapter = new Adapter($mockReserved, new JsonMessageSerializer(), $this->getLoop());
+        $queue = $this->getDefaultQueue($adapter);
+
+        $status = $adapter->status('1');
+        $this->assertEquals(JobStatus::reserved(), $status);
     }
 
     public function testListen(): void
@@ -101,5 +110,38 @@ class QueueTest extends UnitTestCase
         return $this
             ->getQueue()
             ->withAdapter($adapter);
+    }
+
+    public function testAdapterStatusException()
+    {
+        $adapter = $this->getAdapter();
+        $this->expectException(\InvalidArgumentException::class);
+        $adapter->status(-1);
+    }
+
+    public function testAdapterNullMessage()
+    {
+        $provider = $this->createMock(QueueProviderInterface::class);
+        $provider->method('reserve')->willReturn(null);
+
+        $mockLoop = $this->createMock(LoopInterface::class);
+        $mockLoop->expects($this->exactly(2))->method('canContinue')->willReturn(true, false);
+
+        $adapter = new Adapter(
+            $provider,
+            new JsonMessageSerializer(),
+            $mockLoop,
+        );
+        $notUseHandler = true;
+
+        $adapter->runExisting(function (Message $message) use (&$notUseHandler) {
+            $notUseHandler = false;
+        });
+        $this->assertTrue($notUseHandler);
+
+        $adapter->subscribe(function (MessageInterface $message) use (&$notUseHandler) {
+            $notUseHandler = false;
+        });
+        $this->assertTrue($notUseHandler);
     }
 }

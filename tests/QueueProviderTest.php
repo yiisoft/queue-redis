@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Yiisoft\Queue\Redis\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Queue\Redis\Exception\NotConnectedRedisException;
 use Yiisoft\Queue\Redis\QueueProvider;
 use Yiisoft\Queue\Redis\QueueProviderInterface;
 
@@ -38,5 +39,38 @@ class QueueProviderTest extends TestCase
     public function testImmutable(QueueProvider $provider): void
     {
         self::assertNotSame($provider, $provider->withChannelName('new'));
+    }
+
+    public function testNotConnected(): void
+    {
+        $redis = new \Redis();
+        try {
+            new QueueProvider($redis, 'test');
+        } catch (NotConnectedRedisException $e) {
+            $this->assertEquals('Not connected to Redis', $e->getName());
+            $this->assertNotNull($e->getSolution());
+        }
+        $this->expectException(NotConnectedRedisException::class);
+        new QueueProvider($redis, 'test');
+    }
+
+    public function testRedisException(): void
+    {
+        $mock = $this->createMock(\Redis::class);
+        $mock->method('brPop')->willReturn([1 => 1], [1 => '1']);
+        $mock->method('isConnected')->willReturn(true);
+        $mock->method('hget')->willReturn(null);
+        $mock->method('incr')->willReturn(false);
+        $mock->method('zrevrangebyscore')->willReturn(['1', '2']);
+        $mock->method('zremrangebyscore')->willReturn(0);
+        $mock->method('set')->willReturn(true);
+        $mock->expects($this->exactly(8))->method('rpush')->willReturn(1);
+        $provider = new QueueProvider($mock);
+        $this->assertNull($provider->reserve());
+        $this->assertNull($provider->reserve());
+
+        $this->expectException(\RuntimeException::class);
+        $provider->getId();
+
     }
 }
