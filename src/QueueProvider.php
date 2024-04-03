@@ -59,7 +59,7 @@ class QueueProvider implements QueueProviderInterface
     {
         // Moves delayed and reserved jobs into waiting list with lock for one second
         try {
-            if ($this->redis->set("$this->channelName.moving_lock", true, ['NX', 'EX', 1])) {
+            if ($this->redis->set("$this->channelName.moving_lock", 'true', ['NX', 'EX', 1])) {
                 $this->moveExpired("$this->channelName.delayed");
                 $this->moveExpired("$this->channelName.reserved");
             }
@@ -95,11 +95,12 @@ class QueueProvider implements QueueProviderInterface
     /**
      * @throws RedisException
      */
-    private function moveExpired($from): void
+    private function moveExpired(string $from): void
     {
         $now = time();
-        if ($expired = $this->redis->zrevrangebyscore($from, (string) $now, '-inf')) {
-            $this->redis->zremrangebyscore($from, '-inf', $now);
+        $expired = $this->redis->zrevrangebyscore($from, (string) $now, '-inf');
+        if (is_array($expired)) {
+            $this->redis->zremrangebyscore($from, '-inf', (string)$now);
             foreach ($expired as $id) {
                 $this->redis->rpush("$this->channelName.waiting", $id);
             }

@@ -5,3 +5,6 @@ coverage:		## Run code coverage.
 test:			## Run tests.
 	make build
 	docker-compose -f tests/docker-compose.yml run php-cli vendor/bin/phpunit --debug
+static-analyze:		## Run code static analyze.
+	make build
+	docker-compose -f tests/docker-compose.yml run php-cli vendor/bin/psalm --config=psalm.xml --shepherd --stats --php-version=8.1

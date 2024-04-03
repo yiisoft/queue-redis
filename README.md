@@ -2,7 +2,7 @@
     <a href="https://github.com/yiisoft" target="_blank">
         <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px">
     </a>
-    <h1 align="center">Yii _____</h1>
+    <h1 align="center">Yii Queue Redis</h1>
     <br>
 </p>
 
@@ -26,7 +26,7 @@ The package ...
 The package could be installed with composer:
 
 ```shell
-composer require yiisoft/_____
+composer require yiisoft/queue-redis
 ```
 
 ## General usage
@@ -38,7 +38,7 @@ composer require yiisoft/_____
 The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
 
 ```shell
-./vendor/bin/phpunit
+make test
 ```
 
 ### Mutation testing
@@ -55,7 +55,7 @@ The package tests are checked with [Infection](https://infection.github.io/) mut
 The code is statically analyzed with [Psalm](https://psalm.dev/). To run static analysis:
 
 ```shell
-./vendor/bin/psalm
+make static-analyze
 ```
 
 ### Code style
