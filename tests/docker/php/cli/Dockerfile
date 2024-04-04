@@ -11,8 +11,9 @@ RUN rm  -rf /tmp/*
 
 ENV XDEBUG_MODE=coverage
 
-COPY composer.* /app/
 WORKDIR /app
+COPY composer.* .
 RUN composer install --prefer-dist --no-interaction
+COPY /app/* .
 
 ADD . /app
