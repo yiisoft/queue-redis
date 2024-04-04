@@ -6,7 +6,6 @@ services:
       context: ..
       dockerfile: ./tests/docker/php/cli/Dockerfile
     restart: on-failure
-    command: bash -c "composer install"
     volumes:
       - ./runtime:/app/tests/runtime
     depends_on:
