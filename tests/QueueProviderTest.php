@@ -31,8 +31,6 @@ class QueueProviderTest extends TestCase
     }
 
     /**
-     * @param QueueProvider $provider
-     * @return void
      * @depends test__construct
      * @throws \PHPUnit\Framework\MockObject\Exception
      */
@@ -45,13 +43,14 @@ class QueueProviderTest extends TestCase
     {
         $redis = new \Redis();
         try {
-            new QueueProvider($redis, 'test');
+            $provider = new QueueProvider($redis, 'test');
+            $provider->getId();
         } catch (NotConnectedRedisException $e) {
             $this->assertEquals('Not connected to Redis', $e->getName());
             $this->assertNotNull($e->getSolution());
         }
         $this->expectException(NotConnectedRedisException::class);
-        new QueueProvider($redis, 'test');
+        $provider->reserve();
     }
 
     public function testRedisException(): void

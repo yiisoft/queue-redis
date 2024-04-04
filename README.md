@@ -64,7 +64,7 @@ Use [Rector](https://github.com/rectorphp/rector) to make codebase follow some s
 use either newest or any specific version of PHP: 
 
 ```shell
-./vendor/bin/rector
+make rector
 ```
 
 ### Dependencies
@@ -74,7 +74,7 @@ Use [ComposerRequireChecker](https://github.com/maglnet/ComposerRequireChecker) 
 
 ## License
 
-The Yii _____ is free software. It is released under the terms of the BSD License.
+The Yii Queue Redis is free software. It is released under the terms of the BSD License.
 Please see [`LICENSE`](./LICENSE.md) for more information.
 
 Maintained by [Yii Software](https://www.yiiframework.com/).

@@ -11,5 +11,5 @@ services:
     depends_on:
       - redis
   redis:
-    image: redis:latest
+    image: redis:3.0-alpine
     restart: always

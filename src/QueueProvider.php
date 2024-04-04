@@ -18,9 +18,6 @@ class QueueProvider implements QueueProviderInterface
         private string $channelName = self::DEFAULT_CHANNEL_NAME
     )
     {
-        if (!$this->redis->isConnected()) {
-            throw new NotConnectedRedisException('Redis is not connected');
-        }
     }
 
     /**
@@ -28,6 +25,7 @@ class QueueProvider implements QueueProviderInterface
      */
     public function pushMessage(string $message, array $metadata = []): int
     {
+        $this->checkingConnect();
         $id = $this->getId();
         $this->redis->hset("$this->channelName.messages", (string) $id, $message);
         $this->redis->lpush("$this->channelName.waiting", $id);
@@ -39,6 +37,7 @@ class QueueProvider implements QueueProviderInterface
      */
     public function existInWaiting(int $id): bool
     {
+        $this->checkingConnect();
         $exist = $this->redis->hexists("$this->channelName.messages", (string) $id);
         return is_bool($exist) ? $exist : false;
     }
@@ -48,6 +47,7 @@ class QueueProvider implements QueueProviderInterface
      */
     public function existInReserved(int $id): bool
     {
+        $this->checkingConnect();
         $exist = $this->redis->hexists("$this->channelName.attempts", (string) $id);
         return is_bool($exist) ? $exist : false;
     }
@@ -57,6 +57,7 @@ class QueueProvider implements QueueProviderInterface
      */
     public function reserve(int $timeout = 0): ?Reserve
     {
+        $this->checkingConnect();
         // Moves delayed and reserved jobs into waiting list with lock for one second
         try {
             if ($this->redis->set("$this->channelName.moving_lock", 'true', ['NX', 'EX', 1])) {
@@ -85,8 +86,12 @@ class QueueProvider implements QueueProviderInterface
         return new Reserve((int) $id, $payload);
     }
 
+    /**
+     * @throws RedisException
+     */
     public function delete(string $id): void
     {
+        $this->checkingConnect();
         $this->redis->zrem("$this->channelName.reserved", $id);
         $this->redis->hdel("$this->channelName.messages", $id);
         $this->redis->hdel("$this->channelName.attempts", $id);
@@ -113,6 +118,7 @@ class QueueProvider implements QueueProviderInterface
      */
     public function getId(): int
     {
+        $this->checkingConnect();
         $id = $this->redis->incr("$this->channelName.message_id");
         if (is_int($id)) {
             return $id;
@@ -128,5 +134,15 @@ class QueueProvider implements QueueProviderInterface
         }
 
         return new self($this->redis, $channelName);
+    }
+
+    /**
+     * @throws RedisException
+     */
+    private function checkingConnect(): void
+    {
+        if (!$this->redis->isConnected()) {
+            throw new NotConnectedRedisException('Redis is not connected');
+        }
     }
 }
