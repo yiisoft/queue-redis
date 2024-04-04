@@ -1,5 +1,7 @@
 build:			## Build an image from a docker-compose file.
 	docker-compose -f tests/docker-compose.yml up -d --build
+composer:
+	docker-compose -f tests/docker-compose.yml run php-cli composer install
 down :			## Stop and remove containers, networks, images, and volumes.
 	docker-compose -f tests/docker-compose.yml down
 coverage:		## Run code coverage.
