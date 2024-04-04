@@ -31,8 +31,6 @@ class QueueProviderTest extends TestCase
     }
 
     /**
-     * @param QueueProvider $provider
-     * @return void
      * @depends test__construct
      * @throws \PHPUnit\Framework\MockObject\Exception
      */
