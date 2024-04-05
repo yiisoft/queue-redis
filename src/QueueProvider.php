@@ -124,7 +124,7 @@ class QueueProvider implements QueueProviderInterface
             return $id;
         }
 
-        throw new \RuntimeException('Unable to get message id');
+        throw new \RuntimeException('Unable to get message id.');
     }
 
     public function withChannelName(string $channelName): QueueProviderInterface
