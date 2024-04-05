@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Yiisoft\Queue\Redis\Tests;
+namespace Yiisoft\Queue\Redis\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Queue\Redis\Exception\NotConnectedRedisException;
@@ -46,7 +46,7 @@ class QueueProviderTest extends TestCase
             $provider = new QueueProvider($redis, 'test');
             $provider->getId();
         } catch (NotConnectedRedisException $e) {
-            $this->assertEquals('Not connected to Redis', $e->getName());
+            $this->assertEquals('Not connected to Redis.', $e->getName());
             $this->assertNotNull($e->getSolution());
         }
         $this->expectException(NotConnectedRedisException::class);

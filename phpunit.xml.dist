@@ -17,8 +17,11 @@
     </php>
 
     <testsuites>
-        <testsuite name="Yii Queue Redis tests">
-            <directory>./tests</directory>
+        <testsuite name="Yii Integration tests">
+            <directory>./tests/Integration</directory>
+        </testsuite>
+        <testsuite name="Unit">
+            <directory>./tests/Unit</directory>
         </testsuite>
     </testsuites>
 

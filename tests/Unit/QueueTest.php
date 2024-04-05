@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Yiisoft\Queue\Redis\Tests;
+namespace Yiisoft\Queue\Redis\Tests\Unit;
 
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
