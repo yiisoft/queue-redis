@@ -10,11 +10,11 @@ class NotConnectedRedisException extends \RuntimeException implements FriendlyEx
 
     public function getName(): string
     {
-        return 'Not connected to Redis';
+        return 'Not connected to Redis.';
     }
 
     public function getSolution(): ?string
     {
-        return 'Check your Redis configuration and tun $redis->connect() before using it.';
+        return 'Check your Redis configuration and run $redis->connect() before using it.';
     }
 }
