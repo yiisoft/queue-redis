@@ -10,7 +10,7 @@ use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\Message\MessageSerializerInterface;
 
-class Adapter implements AdapterInterface
+final class Adapter implements AdapterInterface
 {
     public function __construct(
         private QueueProviderInterface     $provider,
