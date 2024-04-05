@@ -91,7 +91,7 @@ class QueueProvider implements QueueProviderInterface
      */
     public function delete(string $id): void
     {
-        $this->checkingConnect();
+        $this->checkConnection();
         $this->redis->zrem("$this->channelName.reserved", $id);
         $this->redis->hdel("$this->channelName.messages", $id);
         $this->redis->hdel("$this->channelName.attempts", $id);
