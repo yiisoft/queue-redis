@@ -33,7 +33,7 @@ jobs:
         run: docker compose build
       - name: PHP Unit tests coverage
         working-directory: ./tests
-        run: docker compose run --rm php-cli vendor/bin/phpunit --coverage-clover /app/tests/runtime/coverage.xml
+        run: docker compose run --rm php-cli vendor/bin/phpunit --coverage-clover ./tests/runtime/coverage.xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
