@@ -10,7 +10,7 @@ interface QueueProviderInterface
     public function pushMessage(string $message, array $metadata = []): int;
 
     /**
-     * @return null|Reserve payload and id, or null if queue is empty
+     * @return null|Reserve Payload and id, or null if queue is empty.
      */
     public function reserve(int $timeout = 0): ?Reserve;
 
