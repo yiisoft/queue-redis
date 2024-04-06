@@ -17,7 +17,7 @@
     </php>
 
     <testsuites>
-        <testsuite name="Yii Integration tests">
+        <testsuite name="Integration">
             <directory>./tests/Integration</directory>
         </testsuite>
         <testsuite name="Unit">

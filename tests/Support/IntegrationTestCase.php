@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Yiisoft\Queue\Redis\Tests\Unit;
+namespace Yiisoft\Queue\Redis\Tests\Support;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -22,8 +22,6 @@ use Yiisoft\Queue\Middleware\Push\PushMiddlewareDispatcher;
 use Yiisoft\Queue\Queue;
 use Yiisoft\Queue\Redis\Adapter;
 use Yiisoft\Queue\Redis\QueueProvider;
-use Yiisoft\Queue\Redis\Tests\Support\ExtendedSimpleMessageHandler;
-use Yiisoft\Queue\Redis\Tests\Support\FileHelper;
 use Yiisoft\Queue\Worker\Worker;
 use Yiisoft\Queue\Worker\WorkerInterface;
 use Yiisoft\Test\Support\Container\SimpleContainer;
@@ -31,7 +29,7 @@ use Yiisoft\Test\Support\Container\SimpleContainer;
 /**
  * Test case for unit tests
  */
-abstract class UnitTestCase extends TestCase
+abstract class IntegrationTestCase extends TestCase
 {
     protected Queue|null $queue = null;
     protected ?WorkerInterface $worker = null;
