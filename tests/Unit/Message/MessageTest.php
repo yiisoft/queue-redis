@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Yiisoft\Queue\Redis\Tests\Message;
+namespace Unit\Message;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Queue\Redis\Message\Message;
