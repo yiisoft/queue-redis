@@ -28,7 +28,13 @@ class QueueProvider implements QueueProviderInterface
         $this->checkConnection();
         $id = $this->getId();
         $this->redis->hset("$this->channelName.messages", (string) $id, $message);
-        $this->redis->lpush("$this->channelName.waiting", $id);
+
+        $delay = isset($metadata['delay']) && is_int($metadata['delay']) ? $metadata['delay'] : 0;
+        if ($delay > 0) {
+            $this->redis->zadd("$this->channelName.delayed", time() + $delay, $id);
+        } else {
+            $this->redis->lpush("$this->channelName.waiting", $id);
+        }
         return $id;
     }
 
@@ -93,6 +99,7 @@ class QueueProvider implements QueueProviderInterface
     {
         $this->checkConnection();
         $this->redis->zrem("$this->channelName.reserved", $id);
+        $this->redis->zrem("$this->channelName.delayed", $id);
         $this->redis->hdel("$this->channelName.messages", $id);
         $this->redis->hdel("$this->channelName.attempts", $id);
     }
