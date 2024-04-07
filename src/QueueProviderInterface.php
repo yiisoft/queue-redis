@@ -1,16 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Queue\Redis;
 
 interface QueueProviderInterface
 {
-
-
     public function pushMessage(string $message, array $metadata = []): int;
 
     /**
-     * @return null|Reserve Payload and id, or null if queue is empty.
+     * @return Reserve|null Payload and id, or null if queue is empty.
      */
     public function reserve(int $timeout = 0): ?Reserve;
 
@@ -20,5 +19,5 @@ interface QueueProviderInterface
 
     public function existInReserved(int $id): bool;
 
-    public function withChannelName(string $channelName): QueueProviderInterface;
+    public function withChannelName(string $channelName): self;
 }

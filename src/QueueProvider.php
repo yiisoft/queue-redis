@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Queue\Redis;
@@ -16,8 +17,7 @@ class QueueProvider implements QueueProviderInterface
     public function __construct(
         private \Redis $redis, //redis connection,
         private string $channelName = self::DEFAULT_CHANNEL_NAME
-    )
-    {
+    ) {
     }
 
     /**
@@ -69,7 +69,7 @@ class QueueProvider implements QueueProviderInterface
         }
 
         $result = $this->redis->brpop("$this->channelName.waiting", $timeout);
-        if (is_null($result) || !isset($result[1])) {
+        if (null === $result || !isset($result[1])) {
             return null;
         }
         $id = $result[1];

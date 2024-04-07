@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Queue\Redis;
@@ -13,12 +14,11 @@ use Yiisoft\Queue\Message\MessageSerializerInterface;
 final class Adapter implements AdapterInterface
 {
     public function __construct(
-        private QueueProviderInterface     $provider,
+        private QueueProviderInterface $provider,
         private MessageSerializerInterface $serializer,
-        private LoopInterface              $loop,
-        private int                        $timeout = 3
-    )
-    {
+        private LoopInterface $loop,
+        private int $timeout = 3
+    ) {
     }
 
     public function runExisting(callable $handlerCallback): void
@@ -26,7 +26,7 @@ final class Adapter implements AdapterInterface
         $result = true;
         while ($result) {
             $message = $this->reserve();
-            if (is_null($message)) {
+            if (null === $message) {
                 break;
             }
 
@@ -68,7 +68,7 @@ final class Adapter implements AdapterInterface
     {
         while ($this->loop->canContinue()) {
             $message = $this->reserve();
-            if (is_null($message)) {
+            if (null === $message) {
                 continue;
             }
 
@@ -89,7 +89,7 @@ final class Adapter implements AdapterInterface
     private function reserve(): ?IdEnvelope
     {
         $reserve = $this->provider->reserve($this->timeout);
-        if (is_null($reserve)) {
+        if (null === $reserve) {
             return null;
         }
 
@@ -99,5 +99,4 @@ final class Adapter implements AdapterInterface
 
         return $envelope;
     }
-
 }

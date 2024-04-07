@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Queue\Redis\Tests\Unit;
@@ -10,7 +11,6 @@ use Yiisoft\Queue\Redis\QueueProviderInterface;
 
 class QueueProviderTest extends TestCase
 {
-
     public function test__construct()
     {
         $redis = $this->createMock(\Redis::class);
@@ -19,6 +19,7 @@ class QueueProviderTest extends TestCase
         $this->assertInstanceOf(QueueProviderInterface::class, $provider);
         return $provider;
     }
+
     /**
      * @depends test__construct
      * @throws \PHPUnit\Framework\MockObject\Exception
@@ -59,6 +60,5 @@ class QueueProviderTest extends TestCase
 
         $this->expectException(\RuntimeException::class);
         $provider->getId();
-
     }
 }

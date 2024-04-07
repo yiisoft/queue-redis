@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Queue\Redis\Tests\Unit;
@@ -14,7 +15,6 @@ use Yiisoft\Queue\Redis\QueueProviderInterface;
 
 class QueueTest extends TestCase
 {
-
     public function testImmutable(): void
     {
         $queueProvider = $this->createMock(QueueProviderInterface::class);

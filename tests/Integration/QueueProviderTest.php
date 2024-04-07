@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Queue\Redis\Tests\Integration;
@@ -9,7 +10,6 @@ use Yiisoft\Queue\Redis\QueueProviderInterface;
 
 class QueueProviderTest extends TestCase
 {
-
     /**
      * @depends test__construct
      */
