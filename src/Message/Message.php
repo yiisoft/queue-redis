@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Queue\Redis\Message;
@@ -9,11 +10,10 @@ final class Message implements MessageInterface
 {
     public function __construct(
         private string $handlerName,
-        private mixed  $data,
-        private array  $metadata,
-        private int    $delay = 0 //delay in seconds
-    )
-    {
+        private mixed $data,
+        private array $metadata,
+        private int $delay = 0 //delay in seconds
+    ) {
         if ($this->delay > 0) {
             $this->metadata['delay'] = $delay;
         }
