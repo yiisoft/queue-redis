@@ -52,4 +52,19 @@ class QueueTest extends TestCase
         });
         $this->assertTrue($notUseHandler);
     }
+
+    public function testGetChannel(): void
+    {
+        $expectedChannelName = 'test-channel';
+        $queueProvider = $this->createMock(QueueProviderInterface::class);
+        $queueProvider->method('getChannelName')->willReturn($expectedChannelName);
+
+        $adapter = new Adapter(
+            $queueProvider,
+            $this->createMock(MessageSerializerInterface::class),
+            $this->createMock(LoopInterface::class)
+        );
+
+        $this->assertEquals($expectedChannelName, $adapter->getChannel());
+    }
 }

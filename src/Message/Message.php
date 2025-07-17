@@ -40,4 +40,9 @@ final class Message implements MessageInterface
     {
         return $this->metadata;
     }
+
+    public static function fromData(string $handlerName, mixed $data, array $metadata = []): self
+    {
+        return new self($handlerName, $data, $metadata);
+    }
 }
