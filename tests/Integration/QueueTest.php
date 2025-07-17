@@ -6,7 +6,7 @@ namespace Yiisoft\Queue\Redis\Tests\Integration;
 
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
-use Yiisoft\Queue\Enum\JobStatus;
+use Yiisoft\Queue\JobStatus;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\Message;
 use Yiisoft\Queue\Message\MessageInterface;
@@ -53,12 +53,12 @@ class QueueTest extends IntegrationTestCase
         );
 
         $status = $adapter->status($message->getId());
-        $this->assertEquals(JobStatus::waiting(), $status);
+        $this->assertEquals(JobStatus::WAITING, $status);
 
         $queue->run();
 
         $status = $adapter->status($message->getId());
-        $this->assertEquals(JobStatus::done(), $status);
+        $this->assertEquals(JobStatus::DONE, $status);
 
         $mockReserved = $this->createMock(QueueProviderInterface::class);
         $mockReserved->method('existInReserved')->willReturn(true);
@@ -66,7 +66,7 @@ class QueueTest extends IntegrationTestCase
         $queue = $this->getDefaultQueue($adapter);
 
         $status = $adapter->status('1');
-        $this->assertEquals(JobStatus::reserved(), $status);
+        $this->assertEquals(JobStatus::RESERVED, $status);
     }
 
     public function testListen(): void

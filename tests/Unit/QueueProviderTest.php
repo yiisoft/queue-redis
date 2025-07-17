@@ -61,4 +61,21 @@ class QueueProviderTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $provider->getId();
     }
+
+    /**
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
+    public function testGetChannelName(): void
+    {
+        // Тестируем значение по умолчанию
+        $redis = $this->createMock(\Redis::class);
+        $redis->method('isConnected')->willReturn(true);
+        $provider = new QueueProvider($redis);
+        $this->assertEquals('yii-queue', $provider->getChannelName());
+
+        // Тестируем пользовательское имя канала
+        $customChannelName = 'custom-channel';
+        $provider = new QueueProvider($redis, $customChannelName);
+        $this->assertEquals($customChannelName, $provider->getChannelName());
+    }
 }

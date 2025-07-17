@@ -152,4 +152,9 @@ class QueueProvider implements QueueProviderInterface
             throw new NotConnectedRedisException('Redis is not connected.');
         }
     }
+
+    public function getChannelName(): string
+    {
+        return $this->channelName;
+    }
 }
