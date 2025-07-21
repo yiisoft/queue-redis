@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Queue\Redis;
 
+use BackedEnum;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
-use Yiisoft\Queue\Enum\JobStatus;
+use Yiisoft\Queue\JobStatus;
 use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\Message\MessageSerializerInterface;
@@ -14,11 +15,12 @@ use Yiisoft\Queue\Message\MessageSerializerInterface;
 final class Adapter implements AdapterInterface
 {
     public function __construct(
-        private QueueProviderInterface $provider,
+        private QueueProviderInterface     $provider,
         private MessageSerializerInterface $serializer,
-        private LoopInterface $loop,
-        private int $timeout = 3
-    ) {
+        private LoopInterface              $loop,
+        private int                        $timeout = 3
+    )
+    {
     }
 
     public function runExisting(callable $handlerCallback): void
@@ -45,23 +47,21 @@ final class Adapter implements AdapterInterface
         }
 
         if ($this->provider->existInReserved($id)) {
-            return JobStatus::reserved();
+            return JobStatus::RESERVED;
         }
 
         if ($this->provider->existInWaiting($id)) {
-            return JobStatus::waiting();
+            return JobStatus::WAITING;
         }
 
-        return JobStatus::done();
+        return JobStatus::DONE;
     }
 
     public function push(MessageInterface $message): MessageInterface
     {
         $payload = $this->serializer->serialize($message);
         $id = $this->provider->pushMessage($payload, $message->getMetadata());
-        $envelope = IdEnvelope::fromMessage($message);
-        $envelope->setId($id);
-        return $envelope;
+        return new IdEnvelope($message, $id);
     }
 
     public function subscribe(callable $handlerCallback): void
@@ -79,10 +79,11 @@ final class Adapter implements AdapterInterface
         }
     }
 
-    public function withChannel(string $channel): AdapterInterface
+    public function withChannel(BackedEnum|string $channel): AdapterInterface
     {
         $adapter = clone $this;
-        $adapter->provider = $this->provider->withChannelName($channel);
+        $channelName = is_string($channel) ? $channel : (string) $channel->value;
+        $adapter->provider = $this->provider->withChannelName($channelName);
         return $adapter;
     }
 
@@ -94,9 +95,11 @@ final class Adapter implements AdapterInterface
         }
 
         $message = $this->serializer->unserialize($reserve->payload);
-        $envelope = IdEnvelope::fromMessage($message);
-        $envelope->setId($reserve->id);
+        return new IdEnvelope($message, $reserve->id);
+    }
 
-        return $envelope;
+    public function getChannel(): string
+    {
+        return $this->provider->getChannelName();
     }
 }
