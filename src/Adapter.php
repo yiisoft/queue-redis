@@ -15,12 +15,11 @@ use Yiisoft\Queue\Message\MessageSerializerInterface;
 final class Adapter implements AdapterInterface
 {
     public function __construct(
-        private QueueProviderInterface     $provider,
+        private QueueProviderInterface $provider,
         private MessageSerializerInterface $serializer,
-        private LoopInterface              $loop,
-        private int                        $timeout = 3
-    )
-    {
+        private LoopInterface $loop,
+        private int $timeout = 3
+    ) {
     }
 
     public function runExisting(callable $handlerCallback): void
