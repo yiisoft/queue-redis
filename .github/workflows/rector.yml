@@ -12,13 +12,15 @@ on:
 name: rector
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   rector:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Rector
-        run: make rector
+    uses: yiisoft/actions/.github/workflows/rector.yml@master
+    secrets:
+      token: ${{ secrets.YIISOFT_GITHUB_TOKEN }}
+    with:
+      os: >-
+        ['ubuntu-latest']
+      php: >-
+        ['8.3']
