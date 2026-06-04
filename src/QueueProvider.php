@@ -11,6 +11,8 @@ class QueueProvider implements QueueProviderInterface
 {
     /**
      * @var string
+     *
+     * @psalm-suppress MissingClassConstType PHP 8.1 support prevents native typed class constants.
      */
     private const DEFAULT_CHANNEL_NAME = 'yii-queue';
 
