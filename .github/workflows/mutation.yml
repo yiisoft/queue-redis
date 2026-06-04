@@ -25,11 +25,9 @@ permissions:
 
 jobs:
   mutation:
-    uses: yiisoft/actions/.github/workflows/roave-infection.yml@master
-    with:
-      os: >-
-        ['ubuntu-latest']
-      php: >-
-        ['8.2']
-    secrets:
-      STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Mutation tests
+        run: make mutation
