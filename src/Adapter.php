@@ -7,10 +7,10 @@ namespace Yiisoft\Queue\Redis;
 use BackedEnum;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
-use Yiisoft\Queue\JobStatus;
 use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\Message\MessageSerializerInterface;
+use Yiisoft\Queue\MessageStatus;
 
 final class Adapter implements AdapterInterface
 {
@@ -38,7 +38,7 @@ final class Adapter implements AdapterInterface
         }
     }
 
-    public function status(int|string $id): JobStatus
+    public function status(int|string $id): MessageStatus
     {
         $id = (int) $id;
         if ($id <= 0) {
@@ -46,14 +46,14 @@ final class Adapter implements AdapterInterface
         }
 
         if ($this->provider->existInReserved($id)) {
-            return JobStatus::RESERVED;
+            return MessageStatus::RESERVED;
         }
 
         if ($this->provider->existInWaiting($id)) {
-            return JobStatus::WAITING;
+            return MessageStatus::WAITING;
         }
 
-        return JobStatus::DONE;
+        return MessageStatus::DONE;
     }
 
     public function push(MessageInterface $message): MessageInterface

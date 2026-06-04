@@ -31,6 +31,11 @@ final class Message implements MessageInterface
         return $this->handlerName;
     }
 
+    public function getType(): string
+    {
+        return $this->handlerName;
+    }
+
     public function getData(): mixed
     {
         return $this->data;
@@ -39,6 +44,13 @@ final class Message implements MessageInterface
     public function getMetadata(): array
     {
         return $this->metadata;
+    }
+
+    public function withMetadata(array $metadata): static
+    {
+        $message = clone $this;
+        $message->metadata = $metadata;
+        return $message;
     }
 
     public static function fromData(string $handlerName, mixed $data, array $metadata = []): self
