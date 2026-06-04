@@ -9,21 +9,14 @@ use Yiisoft\Queue\Message\MessageInterface;
 final class Message implements MessageInterface
 {
     /**
-     * @var array<string, mixed>
-     */
-    private array $metadata;
-
-    /**
      * @param array<string, mixed> $metadata
      */
     public function __construct(
         private string $handlerName,
         private mixed $data,
-        array $metadata,
+        private array $metadata,
         private int $delay = 0 //delay in seconds
     ) {
-        $this->metadata = $metadata;
-
         if ($this->delay > 0) {
             $this->metadata['delay'] = $delay;
         }
