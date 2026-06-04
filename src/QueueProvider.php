@@ -9,6 +9,9 @@ use Yiisoft\Queue\Redis\Exception\NotConnectedRedisException;
 
 class QueueProvider implements QueueProviderInterface
 {
+    /**
+     * @var string
+     */
     private const DEFAULT_CHANNEL_NAME = 'yii-queue';
 
     /**
