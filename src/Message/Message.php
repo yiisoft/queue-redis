@@ -8,6 +8,9 @@ use Yiisoft\Queue\Message\MessageInterface;
 
 final class Message implements MessageInterface
 {
+    /**
+     * @param array<string, mixed> $metadata
+     */
     public function __construct(
         private string $handlerName,
         private mixed $data,
@@ -31,18 +34,36 @@ final class Message implements MessageInterface
         return $this->handlerName;
     }
 
+    public function getType(): string
+    {
+        return $this->handlerName;
+    }
+
     public function getData(): mixed
     {
         return $this->data;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getMetadata(): array
     {
         return $this->metadata;
     }
 
-    public static function fromData(string $handlerName, mixed $data, array $metadata = []): self
+    /**
+     * @param array<string, mixed> $metadata
+     */
+    public function withMetadata(array $metadata): static
     {
-        return new self($handlerName, $data, $metadata);
+        $message = clone $this;
+        $message->metadata = $metadata;
+        return $message;
+    }
+
+    public static function fromData(string $type, mixed $data): self
+    {
+        return new self($type, $data, []);
     }
 }

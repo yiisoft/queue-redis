@@ -6,11 +6,11 @@ namespace Yiisoft\Queue\Redis\Tests\Integration;
 
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
-use Yiisoft\Queue\JobStatus;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
-use Yiisoft\Queue\Message\Message;
+use Yiisoft\Queue\Message\GenericMessage as Message;
 use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\Message\MessageSerializerInterface;
+use Yiisoft\Queue\MessageStatus;
 use Yiisoft\Queue\Queue;
 use Yiisoft\Queue\Redis\Adapter;
 use Yiisoft\Queue\Redis\QueueProvider;
@@ -53,20 +53,22 @@ class QueueTest extends IntegrationTestCase
         );
 
         $status = $adapter->status($message->getId());
-        $this->assertEquals(JobStatus::WAITING, $status);
+        $this->assertEquals(MessageStatus::WAITING, $status);
 
         $queue->run();
 
         $status = $adapter->status($message->getId());
-        $this->assertEquals(JobStatus::DONE, $status);
+        $this->assertEquals(MessageStatus::DONE, $status);
+
+        $status = $adapter->status(PHP_INT_MAX);
+        $this->assertEquals(MessageStatus::NOT_FOUND, $status);
 
         $mockReserved = $this->createMock(QueueProviderInterface::class);
         $mockReserved->method('existInReserved')->willReturn(true);
         $adapter = new Adapter($mockReserved, new JsonMessageSerializer(), $this->getLoop());
-        $queue = $this->getDefaultQueue($adapter);
 
         $status = $adapter->status('1');
-        $this->assertEquals(JobStatus::RESERVED, $status);
+        $this->assertEquals(MessageStatus::RESERVED, $status);
     }
 
     public function testListen(): void
@@ -109,16 +111,14 @@ class QueueTest extends IntegrationTestCase
 
     private function getDefaultQueue(AdapterInterface $adapter): Queue
     {
-        return $this
-            ->getQueue()
-            ->withAdapter($adapter);
+        return $this->getQueueWithAdapter($adapter);
     }
 
-    public function testAdapterStatusException()
+    public function testAdapterStatusNotFound(): void
     {
         $adapter = $this->getAdapter();
-        $this->expectException(\InvalidArgumentException::class);
-        $adapter->status(-1);
+        $this->assertSame(MessageStatus::NOT_FOUND, $adapter->status(-1));
+        $this->assertSame(MessageStatus::NOT_FOUND, $adapter->status('invalid'));
     }
 
     public function testAdapterNullMessage()
