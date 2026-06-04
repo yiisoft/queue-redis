@@ -62,11 +62,8 @@ final class Message implements MessageInterface
         return $message;
     }
 
-    /**
-     * @param array<string, mixed> $metadata
-     */
-    public static function fromData(string $type, mixed $data, array $metadata = []): self
+    public static function fromData(string $type, mixed $data): self
     {
-        return new self($type, $data, $metadata);
+        return new self($type, $data, []);
     }
 }

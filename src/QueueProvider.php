@@ -139,6 +139,17 @@ class QueueProvider implements QueueProviderInterface
         throw new \RuntimeException('Unable to get message id.');
     }
 
+    /**
+     * @throws RedisException
+     */
+    public function getLastId(): int
+    {
+        $this->checkConnection();
+        $id = $this->redis->get("$this->channelName.message_id");
+
+        return is_string($id) ? (int) $id : 0;
+    }
+
     public function withChannelName(string $channelName): QueueProviderInterface
     {
         if ($this->channelName === $channelName) {

@@ -19,6 +19,8 @@ interface QueueProviderInterface
 
     public function existInReserved(int $id): bool;
 
+    public function getLastId(): int;
+
     public function withChannelName(string $channelName): self;
 
     public function getChannelName(): string;

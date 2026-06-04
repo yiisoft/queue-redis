@@ -42,7 +42,7 @@ final class Adapter implements AdapterInterface
     {
         $id = (int) $id;
         if ($id <= 0) {
-            throw new \InvalidArgumentException('This adapter IDs start with 1.');
+            return MessageStatus::NOT_FOUND;
         }
 
         if ($this->provider->existInReserved($id)) {
@@ -51,6 +51,10 @@ final class Adapter implements AdapterInterface
 
         if ($this->provider->existInWaiting($id)) {
             return MessageStatus::WAITING;
+        }
+
+        if ($id > $this->provider->getLastId()) {
+            return MessageStatus::NOT_FOUND;
         }
 
         return MessageStatus::DONE;

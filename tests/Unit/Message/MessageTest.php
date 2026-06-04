@@ -13,6 +13,7 @@ class MessageTest extends TestCase
     {
         $message = new Message('handler', 'data', []);
         $this->assertEquals('handler', $message->getHandlerName());
+        $this->assertEquals('handler', $message->getType());
     }
 
     public function testGetData(): void
@@ -32,6 +33,16 @@ class MessageTest extends TestCase
         $this->assertEquals($metadata, $message->getMetadata());
     }
 
+    public function testWithMetadata(): void
+    {
+        $message = new Message('handler', 'data', []);
+        $messageWithMetadata = $message->withMetadata(['key' => 'value']);
+
+        $this->assertNotSame($message, $messageWithMetadata);
+        $this->assertSame([], $message->getMetadata());
+        $this->assertSame(['key' => 'value'], $messageWithMetadata->getMetadata());
+    }
+
     public function testWithDelay(): void
     {
         $message = new Message('handler', 'data', []);
@@ -45,13 +56,12 @@ class MessageTest extends TestCase
     {
         $handlerName = 'test-handler';
         $data = ['key' => 'value'];
-        $metadata = ['custom' => 'metadata'];
 
-        $message = Message::fromData($handlerName, $data, $metadata);
+        $message = Message::fromData($handlerName, $data);
 
         $this->assertInstanceOf(Message::class, $message);
         $this->assertEquals($handlerName, $message->getHandlerName());
         $this->assertEquals($data, $message->getData());
-        $this->assertEquals($metadata, $message->getMetadata());
+        $this->assertEquals([], $message->getMetadata());
     }
 }

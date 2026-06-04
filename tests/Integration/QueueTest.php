@@ -60,10 +60,12 @@ class QueueTest extends IntegrationTestCase
         $status = $adapter->status($message->getId());
         $this->assertEquals(MessageStatus::DONE, $status);
 
+        $status = $adapter->status(PHP_INT_MAX);
+        $this->assertEquals(MessageStatus::NOT_FOUND, $status);
+
         $mockReserved = $this->createMock(QueueProviderInterface::class);
         $mockReserved->method('existInReserved')->willReturn(true);
         $adapter = new Adapter($mockReserved, new JsonMessageSerializer(), $this->getLoop());
-        $queue = $this->getDefaultQueue($adapter);
 
         $status = $adapter->status('1');
         $this->assertEquals(MessageStatus::RESERVED, $status);
@@ -112,11 +114,11 @@ class QueueTest extends IntegrationTestCase
         return $this->getQueueWithAdapter($adapter);
     }
 
-    public function testAdapterStatusException()
+    public function testAdapterStatusNotFound(): void
     {
         $adapter = $this->getAdapter();
-        $this->expectException(\InvalidArgumentException::class);
-        $adapter->status(-1);
+        $this->assertSame(MessageStatus::NOT_FOUND, $adapter->status(-1));
+        $this->assertSame(MessageStatus::NOT_FOUND, $adapter->status('invalid'));
     }
 
     public function testAdapterNullMessage()
