@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Unit\Message;
+namespace Yiisoft\Queue\Redis\Tests\Unit\Message;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Queue\Redis\Message\Message;
 
-class MessageTest extends TestCase
+final class MessageTest extends TestCase
 {
     public function testGetHandlerName(): void
     {
@@ -20,6 +20,7 @@ class MessageTest extends TestCase
     {
         $message = new Message('handler', 'data', []);
         $this->assertEquals('data', $message->getData());
+        $this->assertEquals('data', $message->getPayload());
     }
 
     public function testGetMetadata(): void
@@ -27,10 +28,12 @@ class MessageTest extends TestCase
         $metadata = ['key' => 'value'];
         $message = new Message('handler', 'data', $metadata);
         $this->assertEquals($metadata, $message->getMetadata());
+        $this->assertEquals($metadata, $message->getMeta());
 
         $message = new Message('handler', 'data', $metadata, 2);
         $metadata['delay'] = 2;
         $this->assertEquals($metadata, $message->getMetadata());
+        $this->assertEquals($metadata, $message->getMeta());
     }
 
     public function testWithMetadata(): void
@@ -41,6 +44,16 @@ class MessageTest extends TestCase
         $this->assertNotSame($message, $messageWithMetadata);
         $this->assertSame([], $message->getMetadata());
         $this->assertSame(['key' => 'value'], $messageWithMetadata->getMetadata());
+    }
+
+    public function testWithMeta(): void
+    {
+        $message = new Message('handler', 'data', []);
+        $messageWithMeta = $message->withMeta(['key' => 'value']);
+
+        $this->assertNotSame($message, $messageWithMeta);
+        $this->assertSame([], $message->getMeta());
+        $this->assertSame(['key' => 'value'], $messageWithMeta->getMeta());
     }
 
     public function testWithDelay(): void
@@ -63,5 +76,33 @@ class MessageTest extends TestCase
         $this->assertEquals($handlerName, $message->getHandlerName());
         $this->assertEquals($data, $message->getData());
         $this->assertEquals([], $message->getMetadata());
+    }
+
+    public function testFromPayload(): void
+    {
+        $handlerName = 'test-handler';
+        $payload = ['key' => 'value'];
+
+        $message = Message::fromPayload($handlerName, $payload);
+
+        $this->assertSame($handlerName, $message->getType());
+        $this->assertSame($payload, $message->getPayload());
+        $this->assertSame([], $message->getMeta());
+    }
+
+    public function testFromDataFailsWithInvalidPayload(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Payload must contain only null, scalar values, and arrays of them.');
+
+        Message::fromData('handler', new \stdClass());
+    }
+
+    public function testFromDataFailsWithNestedInvalidPayload(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Payload must contain only null, scalar values, and arrays of them.');
+
+        Message::fromData('handler', ['nested' => new \stdClass()]);
     }
 }
