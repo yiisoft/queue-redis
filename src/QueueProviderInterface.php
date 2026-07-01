@@ -7,7 +7,7 @@ namespace Yiisoft\Queue\Redis;
 interface QueueProviderInterface
 {
     /**
-     * @param array<string, bool|int|float|string|array|null> $metadata
+     * @param array<string, array|bool|float|int|string|null> $metadata
      */
     public function pushMessage(string $message, array $metadata = []): int;
 
