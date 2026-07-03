@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
       - name: Build
         working-directory: ./tests
         run: docker compose build
@@ -35,7 +35,7 @@ jobs:
         working-directory: ./tests
         run: docker compose run --rm php-cli vendor/bin/phpunit --coverage-clover ./tests/runtime/coverage.xml
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v7
         with:
           verbose: true
           files: ./tests/runtime/coverage.xml
