@@ -22,12 +22,21 @@ on:
 
 name: build
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 jobs:
   phpunit:
+    name: phpunit
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
       - name: Build
         working-directory: ./tests
         run: docker compose build
@@ -35,7 +44,7 @@ jobs:
         working-directory: ./tests
         run: docker compose run --rm php-cli vendor/bin/phpunit --coverage-clover ./tests/runtime/coverage.xml
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v7
+        uses: codecov/codecov-action@a99c28d3f0da835de33ff2feb2e15691c7b9641f # v7
         with:
           verbose: true
           files: ./tests/runtime/coverage.xml
