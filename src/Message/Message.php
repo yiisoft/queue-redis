@@ -6,19 +6,14 @@ namespace Yiisoft\Queue\Redis\Message;
 
 use Yiisoft\Queue\Message\MessageInterface;
 
-/**
- * @psalm-import-type MessageMeta from MessageInterface
- * @psalm-import-type MessagePayload from MessageInterface
- */
 final class Message implements MessageInterface
 {
     /**
-     * @psalm-param MessagePayload $data
-     * @psalm-param MessageMeta $metadata
+     * @param array<string, mixed> $metadata
      */
     public function __construct(
         private string $handlerName,
-        private bool|int|float|string|array|null $data,
+        private mixed $data,
         private array $metadata,
         private int $delay = 0 //delay in seconds
     ) {
@@ -49,13 +44,8 @@ final class Message implements MessageInterface
         return $this->data;
     }
 
-    public function getPayload(): bool|int|float|string|array|null
-    {
-        return $this->data;
-    }
-
     /**
-     * @psalm-return MessageMeta
+     * @return array<string, mixed>
      */
     public function getMetadata(): array
     {
@@ -63,15 +53,7 @@ final class Message implements MessageInterface
     }
 
     /**
-     * @psalm-return MessageMeta
-     */
-    public function getMeta(): array
-    {
-        return $this->metadata;
-    }
-
-    /**
-     * @psalm-param MessageMeta $metadata
+     * @param array<string, mixed> $metadata
      */
     public function withMetadata(array $metadata): static
     {
@@ -80,54 +62,8 @@ final class Message implements MessageInterface
         return $message;
     }
 
-    /**
-     * @psalm-param MessageMeta $meta
-     */
-    public function withMeta(array $meta): static
-    {
-        return $this->withMetadata($meta);
-    }
-
     public static function fromData(string $type, mixed $data): self
     {
-        self::assertPayload($data);
         return new self($type, $data, []);
-    }
-
-    public static function fromPayload(string $type, bool|int|float|string|array|null $payload): self
-    {
-        return new self($type, $payload, []);
-    }
-
-    /**
-     * @psalm-assert MessagePayload $payload
-     */
-    private static function assertPayload(mixed $payload): void
-    {
-        if (!self::isPayload($payload)) {
-            throw new \InvalidArgumentException('Payload must contain only null, scalar values, and arrays of them.');
-        }
-    }
-
-    /**
-     * @psalm-assert-if-true MessagePayload $payload
-     */
-    private static function isPayload(mixed $payload): bool
-    {
-        if ($payload === null || is_scalar($payload)) {
-            return true;
-        }
-
-        if (!is_array($payload)) {
-            return false;
-        }
-
-        foreach ($payload as $value) {
-            if (!self::isPayload($value)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

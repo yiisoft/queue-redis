@@ -26,8 +26,6 @@ class QueueProvider implements QueueProviderInterface
     }
 
     /**
-     * @param array<string, array|bool|float|int|string|null> $metadata
-     *
      * @throws RedisException
      */
     public function pushMessage(string $message, array $metadata = []): int

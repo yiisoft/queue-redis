@@ -11,9 +11,8 @@ use Yiisoft\Injector\Injector;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Cli\SignalLoop;
+use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\MessageInterface;
-use Yiisoft\Queue\Message\Serializer\JsonMessageEncoder;
-use Yiisoft\Queue\Message\Serializer\MessageSerializer;
 use Yiisoft\Queue\Middleware\CallableFactory;
 use Yiisoft\Queue\Middleware\Consume\ConsumeMiddlewareDispatcher;
 use Yiisoft\Queue\Middleware\Consume\ConsumeMiddlewareFactory;
@@ -92,7 +91,7 @@ abstract class IntegrationTestCase extends TestCase
         return [
             'ext-simple' => [new ExtendedSimpleMessageHandler(new FileHelper()), 'handle'],
             'exception-listen' => static function (MessageInterface $message) {
-                $data = $message->getPayload();
+                $data = $message->getData();
                 if (null !== $data) {
                     throw new \RuntimeException((string) $data['payload']['time']);
                 }
@@ -135,7 +134,7 @@ abstract class IntegrationTestCase extends TestCase
     {
         return $this->adapter ??= new Adapter(
             $this->getQueueProvider(),
-            new MessageSerializer(new JsonMessageEncoder()),
+            new JsonMessageSerializer(),
             $this->getLoop(),
         );
     }

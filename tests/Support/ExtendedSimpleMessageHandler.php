@@ -17,7 +17,7 @@ final class ExtendedSimpleMessageHandler
 
     public function handle(MessageInterface $message): void
     {
-        $data = $message->getPayload();
+        $data = $message->getData();
         if (null !== $data) {
             $this->fileHelper->put($data['file_name'], $data['payload']['time']);
         }

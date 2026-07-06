@@ -36,7 +36,7 @@ class QueueProviderTest extends TestCase
     public function testDelay(QueueProvider $provider): void
     {
         $message = new Message('test', ['key' => 'value'], [], 2);
-        $id = $provider->pushMessage(json_encode($message->getPayload(), JSON_THROW_ON_ERROR), $message->getMeta());
+        $id = $provider->pushMessage(json_encode($message->getData(), JSON_THROW_ON_ERROR), $message->getMetadata());
         $this->assertGreaterThan(0, $id);
         $reserv = $provider->reserve($id);
         $this->assertNull($reserv);

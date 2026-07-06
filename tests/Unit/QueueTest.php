@@ -6,11 +6,10 @@ namespace Yiisoft\Queue\Redis\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Queue\Cli\LoopInterface;
+use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\Message;
 use Yiisoft\Queue\Message\MessageInterface;
-use Yiisoft\Queue\Message\Serializer\JsonMessageEncoder;
-use Yiisoft\Queue\Message\Serializer\MessageSerializer;
-use Yiisoft\Queue\Message\Serializer\MessageSerializerInterface;
+use Yiisoft\Queue\Message\MessageSerializerInterface;
 use Yiisoft\Queue\Redis\Adapter;
 use Yiisoft\Queue\Redis\QueueProviderInterface;
 
@@ -38,7 +37,7 @@ class QueueTest extends TestCase
 
         $adapter = new Adapter(
             $provider,
-            new MessageSerializer(new JsonMessageEncoder()),
+            new JsonMessageSerializer(),
             $mockLoop,
         );
         $notUseHandler = true;

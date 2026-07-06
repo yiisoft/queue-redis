@@ -6,11 +6,10 @@ namespace Yiisoft\Queue\Redis\Tests\Integration;
 
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
+use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\GenericMessage as Message;
 use Yiisoft\Queue\Message\MessageInterface;
-use Yiisoft\Queue\Message\Serializer\JsonMessageEncoder;
-use Yiisoft\Queue\Message\Serializer\MessageSerializer;
-use Yiisoft\Queue\Message\Serializer\MessageSerializerInterface;
+use Yiisoft\Queue\Message\MessageSerializerInterface;
 use Yiisoft\Queue\MessageStatus;
 use Yiisoft\Queue\Queue;
 use Yiisoft\Queue\Redis\Adapter;
@@ -66,7 +65,7 @@ class QueueTest extends IntegrationTestCase
 
         $mockReserved = $this->createMock(QueueProviderInterface::class);
         $mockReserved->method('existInReserved')->willReturn(true);
-        $adapter = new Adapter($mockReserved, new MessageSerializer(new JsonMessageEncoder()), $this->getLoop());
+        $adapter = new Adapter($mockReserved, new JsonMessageSerializer(), $this->getLoop());
 
         $status = $adapter->status('1');
         $this->assertEquals(MessageStatus::RESERVED, $status);
@@ -84,7 +83,7 @@ class QueueTest extends IntegrationTestCase
         $adapter = new Adapter(
             $queueProvider
                 ->withChannelName('yii-queue'),
-            new MessageSerializer(new JsonMessageEncoder()),
+            new JsonMessageSerializer(),
             $mockLoop,
         );
         $queue = $this->getDefaultQueue($adapter);
@@ -132,7 +131,7 @@ class QueueTest extends IntegrationTestCase
 
         $adapter = new Adapter(
             $provider,
-            new MessageSerializer(new JsonMessageEncoder()),
+            new JsonMessageSerializer(),
             $mockLoop,
         );
         $notUseHandler = true;
