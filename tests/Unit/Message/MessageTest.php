@@ -23,25 +23,25 @@ class MessageTest extends TestCase
         $this->assertEquals('data', $message->getPayload());
     }
 
-    public function testGetMetadata(): void
+    public function testGetMeta(): void
     {
-        $metadata = ['key' => 'value'];
-        $message = new Message('handler', 'data', $metadata);
-        $this->assertEquals($metadata, $message->getMeta());
+        $meta = ['key' => 'value'];
+        $message = new Message('handler', 'data', $meta);
+        $this->assertEquals($meta, $message->getMeta());
 
-        $message = new Message('handler', 'data', $metadata, 2);
-        $metadata[DelayEnvelope::META_DELAY_SECONDS] = 2;
-        $this->assertEquals($metadata, $message->getMeta());
+        $message = new Message('handler', 'data', $meta, 2);
+        $meta[DelayEnvelope::META_DELAY_SECONDS] = 2;
+        $this->assertEquals($meta, $message->getMeta());
     }
 
-    public function testWithMetadata(): void
+    public function testWithMeta(): void
     {
         $message = new Message('handler', 'data', []);
-        $messageWithMetadata = $message->withMeta(['key' => 'value']);
+        $messageWithMeta = $message->withMeta(['key' => 'value']);
 
-        $this->assertNotSame($message, $messageWithMetadata);
+        $this->assertNotSame($message, $messageWithMeta);
         $this->assertSame([], $message->getMeta());
-        $this->assertSame(['key' => 'value'], $messageWithMetadata->getMeta());
+        $this->assertSame(['key' => 'value'], $messageWithMeta->getMeta());
     }
 
     public function testWithDelay(): void
