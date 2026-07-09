@@ -17,7 +17,7 @@ class MessageTest extends TestCase
         $this->assertEquals('handler', $message->getType());
     }
 
-    public function testGetData(): void
+    public function testGetPayload(): void
     {
         $message = new Message('handler', 'data', []);
         $this->assertEquals('data', $message->getPayload());
@@ -53,7 +53,7 @@ class MessageTest extends TestCase
         $this->assertEquals(5, $delayedMessage->getMeta()[DelayEnvelope::META_DELAY_SECONDS]);
     }
 
-    public function testFromData(): void
+    public function testFromPayload(): void
     {
         $handlerName = 'test-handler';
         $data = ['key' => 'value'];
