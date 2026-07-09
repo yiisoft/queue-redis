@@ -30,7 +30,7 @@ class QueueProvider implements QueueProviderInterface
      * @throws RedisException
      */
     /**
-     * @param array<string, bool|int|float|string|array|null> $meta
+     * @param array<string, array|bool|float|int|string|null> $meta
      */
     public function pushMessage(string $message, array $meta = []): int
     {
@@ -38,7 +38,7 @@ class QueueProvider implements QueueProviderInterface
         $id = $this->getId();
         $this->redis->hset("$this->channelName.messages", (string) $id, $message);
 
-        /** @var bool|int|float|string|array|null $delay */
+        /** @var array|bool|float|int|string|null $delay */
         $delay = $meta[DelayEnvelope::META_DELAY_SECONDS] ?? 0;
         $delay = is_int($delay) || is_float($delay) ? $delay : 0;
         if ($delay > 0) {
