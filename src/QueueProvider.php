@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Queue\Redis;
 
 use RedisException;
+use Yiisoft\Queue\Message\DelayEnvelope;
 use Yiisoft\Queue\Redis\Exception\NotConnectedRedisException;
 
 class QueueProvider implements QueueProviderInterface
@@ -28,13 +29,18 @@ class QueueProvider implements QueueProviderInterface
     /**
      * @throws RedisException
      */
-    public function pushMessage(string $message, array $metadata = []): int
+    /**
+     * @param array<string, bool|int|float|string|array|null> $meta
+     */
+    public function pushMessage(string $message, array $meta = []): int
     {
         $this->checkConnection();
         $id = $this->getId();
         $this->redis->hset("$this->channelName.messages", (string) $id, $message);
 
-        $delay = isset($metadata['delay']) && is_int($metadata['delay']) ? $metadata['delay'] : 0;
+        /** @var bool|int|float|string|array|null $delay */
+        $delay = $meta[DelayEnvelope::META_DELAY_SECONDS] ?? 0;
+        $delay = is_int($delay) || is_float($delay) ? $delay : 0;
         if ($delay > 0) {
             $this->redis->zadd("$this->channelName.delayed", time() + $delay, $id);
         } else {

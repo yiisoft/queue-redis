@@ -4,28 +4,34 @@ declare(strict_types=1);
 
 namespace Yiisoft\Queue\Redis\Message;
 
+use Yiisoft\Queue\Message\DelayEnvelope;
 use Yiisoft\Queue\Message\MessageInterface;
 
+/**
+ * @psalm-import-type MessagePayload from MessageInterface
+ * @psalm-import-type MessageMeta from MessageInterface
+ */
 final class Message implements MessageInterface
 {
     /**
-     * @param array<string, mixed> $metadata
+     * @psalm-param MessagePayload $payload
+     * @psalm-param MessageMeta $meta
      */
     public function __construct(
         private string $handlerName,
-        private mixed $data,
-        private array $metadata,
+        private bool|int|float|string|array|null $payload,
+        private array $meta,
         private int $delay = 0 //delay in seconds
     ) {
         if ($this->delay > 0) {
-            $this->metadata['delay'] = $delay;
+            $this->meta[DelayEnvelope::META_DELAY_SECONDS] = $delay;
         }
     }
 
     public function withDelay(int $delay): self
     {
         $message = clone $this;
-        $message->metadata['delay'] = $delay;
+        $message->meta[DelayEnvelope::META_DELAY_SECONDS] = $delay;
         return $message;
     }
 
@@ -39,31 +45,37 @@ final class Message implements MessageInterface
         return $this->handlerName;
     }
 
-    public function getData(): mixed
+    /**
+     * @psalm-return MessagePayload
+     */
+    public function getPayload(): bool|int|float|string|array|null
     {
-        return $this->data;
+        return $this->payload;
     }
 
     /**
-     * @return array<string, mixed>
+     * @psalm-return MessageMeta
      */
-    public function getMetadata(): array
+    public function getMeta(): array
     {
-        return $this->metadata;
+        return $this->meta;
     }
 
     /**
-     * @param array<string, mixed> $metadata
+     * @psalm-param MessageMeta $meta
      */
-    public function withMetadata(array $metadata): static
+    public function withMeta(array $meta): static
     {
         $message = clone $this;
-        $message->metadata = $metadata;
+        $message->meta = $meta;
         return $message;
     }
 
-    public static function fromData(string $type, mixed $data): self
+    /**
+     * @psalm-param MessagePayload $payload
+     */
+    public static function fromPayload(string $type, bool|int|float|string|array|null $payload): static
     {
-        return new self($type, $data, []);
+        return new self($type, $payload, []);
     }
 }
