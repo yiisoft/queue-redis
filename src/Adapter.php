@@ -9,7 +9,7 @@ use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\MessageInterface;
-use Yiisoft\Queue\Message\MessageSerializerInterface;
+use Yiisoft\Queue\Message\Serializer\MessageSerializerInterface;
 use Yiisoft\Queue\MessageStatus;
 
 final class Adapter implements AdapterInterface
@@ -63,7 +63,7 @@ final class Adapter implements AdapterInterface
     public function push(MessageInterface $message): MessageInterface
     {
         $payload = $this->serializer->serialize($message);
-        $id = $this->provider->pushMessage($payload, $message->getMetadata());
+        $id = $this->provider->pushMessage($payload, $message->getMeta());
         return new IdEnvelope($message, $id);
     }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Unit\Message;
 
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Queue\Message\DelayEnvelope;
 use Yiisoft\Queue\Redis\Message\Message;
 
 class MessageTest extends TestCase
@@ -16,31 +17,31 @@ class MessageTest extends TestCase
         $this->assertEquals('handler', $message->getType());
     }
 
-    public function testGetData(): void
+    public function testGetPayload(): void
     {
         $message = new Message('handler', 'data', []);
-        $this->assertEquals('data', $message->getData());
+        $this->assertEquals('data', $message->getPayload());
     }
 
-    public function testGetMetadata(): void
+    public function testGetMeta(): void
     {
-        $metadata = ['key' => 'value'];
-        $message = new Message('handler', 'data', $metadata);
-        $this->assertEquals($metadata, $message->getMetadata());
+        $meta = ['key' => 'value'];
+        $message = new Message('handler', 'data', $meta);
+        $this->assertEquals($meta, $message->getMeta());
 
-        $message = new Message('handler', 'data', $metadata, 2);
-        $metadata['delay'] = 2;
-        $this->assertEquals($metadata, $message->getMetadata());
+        $message = new Message('handler', 'data', $meta, 2);
+        $meta[DelayEnvelope::META_DELAY_SECONDS] = 2;
+        $this->assertEquals($meta, $message->getMeta());
     }
 
-    public function testWithMetadata(): void
+    public function testWithMeta(): void
     {
         $message = new Message('handler', 'data', []);
-        $messageWithMetadata = $message->withMetadata(['key' => 'value']);
+        $messageWithMeta = $message->withMeta(['key' => 'value']);
 
-        $this->assertNotSame($message, $messageWithMetadata);
-        $this->assertSame([], $message->getMetadata());
-        $this->assertSame(['key' => 'value'], $messageWithMetadata->getMetadata());
+        $this->assertNotSame($message, $messageWithMeta);
+        $this->assertSame([], $message->getMeta());
+        $this->assertSame(['key' => 'value'], $messageWithMeta->getMeta());
     }
 
     public function testWithDelay(): void
@@ -49,19 +50,19 @@ class MessageTest extends TestCase
         $delayedMessage = $message->withDelay(5);
 
         $this->assertNotSame($message, $delayedMessage);
-        $this->assertEquals(5, $delayedMessage->getMetadata()['delay']);
+        $this->assertEquals(5, $delayedMessage->getMeta()[DelayEnvelope::META_DELAY_SECONDS]);
     }
 
-    public function testFromData(): void
+    public function testFromPayload(): void
     {
         $handlerName = 'test-handler';
         $data = ['key' => 'value'];
 
-        $message = Message::fromData($handlerName, $data);
+        $message = Message::fromPayload($handlerName, $data);
 
         $this->assertInstanceOf(Message::class, $message);
         $this->assertEquals($handlerName, $message->getHandlerName());
-        $this->assertEquals($data, $message->getData());
-        $this->assertEquals([], $message->getMetadata());
+        $this->assertEquals($data, $message->getPayload());
+        $this->assertEquals([], $message->getMeta());
     }
 }

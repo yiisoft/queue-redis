@@ -6,7 +6,10 @@ namespace Yiisoft\Queue\Redis;
 
 interface QueueProviderInterface
 {
-    public function pushMessage(string $message, array $metadata = []): int;
+    /**
+     * @param array<string, array|bool|float|int|string|null> $meta
+     */
+    public function pushMessage(string $message, array $meta = []): int;
 
     /**
      * @return Reserve|null Payload and id, or null if queue is empty.
