@@ -19,6 +19,8 @@ use Yiisoft\Queue\Redis\QueueProviderInterface;
 use Yiisoft\Queue\Redis\Tests\Support\FileHelper;
 use Yiisoft\Queue\Redis\Tests\Support\IntegrationTestCase;
 
+use const PHP_INT_MAX;
+
 class QueueTest extends IntegrationTestCase
 {
     public function testRunExisting()
@@ -30,7 +32,7 @@ class QueueTest extends IntegrationTestCase
         $queue = $this->getDefaultQueue($this->getAdapter());
 
         $queue->push(
-            new Message('ext-simple', ['file_name' => $fileName, 'payload' => ['time' => $time]])
+            new Message('ext-simple', ['file_name' => $fileName, 'payload' => ['time' => $time]]),
         );
 
         self::assertNull($fileHelper->get($fileName));
@@ -79,7 +81,7 @@ class QueueTest extends IntegrationTestCase
         $mockLoop->expects($this->exactly(3))->method('canContinue')->willReturn(true, true, false);
 
         $queueProvider = new QueueProvider(
-            $this->createConnection()
+            $this->createConnection(),
         );
         $adapter = new Adapter(
             $queueProvider
@@ -90,10 +92,10 @@ class QueueTest extends IntegrationTestCase
         $queue = $this->getDefaultQueue($adapter);
 
         $queue->push(
-            new Message('ext-simple', ['file_name' => 'test-listen' . $time, 'payload' => ['time' => $time]])
+            new Message('ext-simple', ['file_name' => 'test-listen' . $time, 'payload' => ['time' => $time]]),
         );
         $queue->push(
-            new Message('ext-simple', ['file_name' => 'test-listen' . $time, 'payload' => ['time' => $time]])
+            new Message('ext-simple', ['file_name' => 'test-listen' . $time, 'payload' => ['time' => $time]]),
         );
         $queue->listen();
     }
@@ -104,15 +106,10 @@ class QueueTest extends IntegrationTestCase
         $adapter = new Adapter(
             $queueProvider,
             $this->createMock(MessageSerializerInterface::class),
-            $this->createMock(LoopInterface::class)
+            $this->createMock(LoopInterface::class),
         );
 
         self::assertNotSame($adapter, $adapter->withChannel('test'));
-    }
-
-    private function getDefaultQueue(AdapterInterface $adapter): Queue
-    {
-        return $this->getQueueWithAdapter($adapter);
     }
 
     public function testAdapterStatusNotFound(): void
@@ -146,5 +143,10 @@ class QueueTest extends IntegrationTestCase
             $notUseHandler = false;
         });
         $this->assertTrue($notUseHandler);
+    }
+
+    private function getDefaultQueue(AdapterInterface $adapter): Queue
+    {
+        return $this->getQueueWithAdapter($adapter);
     }
 }

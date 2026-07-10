@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Queue\Redis\Exception;
 
 use Yiisoft\FriendlyException\FriendlyExceptionInterface;
+use RuntimeException;
 
-class NotConnectedRedisException extends \RuntimeException implements FriendlyExceptionInterface
+class NotConnectedRedisException extends RuntimeException implements FriendlyExceptionInterface
 {
     public function getName(): string
     {

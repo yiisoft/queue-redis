@@ -22,7 +22,7 @@ class QueueTest extends TestCase
         $adapter = new Adapter(
             $queueProvider,
             $this->createMock(MessageSerializerInterface::class),
-            $this->createMock(LoopInterface::class)
+            $this->createMock(LoopInterface::class),
         );
 
         self::assertNotSame($adapter, $adapter->withChannel('test'));
@@ -63,7 +63,7 @@ class QueueTest extends TestCase
         $adapter = new Adapter(
             $queueProvider,
             $this->createMock(MessageSerializerInterface::class),
-            $this->createMock(LoopInterface::class)
+            $this->createMock(LoopInterface::class),
         );
 
         $this->assertEquals($expectedChannelName, $adapter->getChannel());

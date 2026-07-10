@@ -8,12 +8,15 @@ use PHPUnit\Framework\TestCase;
 use Yiisoft\Queue\Redis\Exception\NotConnectedRedisException;
 use Yiisoft\Queue\Redis\QueueProvider;
 use Yiisoft\Queue\Redis\QueueProviderInterface;
+use PHPUnit\Framework\MockObject\Exception;
+use Redis;
+use RuntimeException;
 
 class QueueProviderTest extends TestCase
 {
     public function test__construct()
     {
-        $redis = $this->createMock(\Redis::class);
+        $redis = $this->createMock(Redis::class);
         $redis->method('isConnected')->willReturn(true);
         $provider = new QueueProvider($redis, 'test');
         $this->assertInstanceOf(QueueProviderInterface::class, $provider);
@@ -22,7 +25,7 @@ class QueueProviderTest extends TestCase
 
     /**
      * @depends test__construct
-     * @throws \PHPUnit\Framework\MockObject\Exception
+     * @throws Exception
      */
     public function testImmutable(QueueProvider $provider): void
     {
@@ -31,7 +34,7 @@ class QueueProviderTest extends TestCase
 
     public function testNotConnected(): void
     {
-        $redis = new \Redis();
+        $redis = new Redis();
         try {
             $provider = new QueueProvider($redis, 'test');
             $provider->getId();
@@ -45,7 +48,7 @@ class QueueProviderTest extends TestCase
 
     public function testRedisException(): void
     {
-        $mock = $this->createMock(\Redis::class);
+        $mock = $this->createMock(Redis::class);
         $mock->method('brPop')->willReturn([1 => 1], [1 => '1']);
         $mock->method('isConnected')->willReturn(true);
         $mock->method('hget')->willReturn(null);
@@ -58,17 +61,17 @@ class QueueProviderTest extends TestCase
         $this->assertNull($provider->reserve());
         $this->assertNull($provider->reserve());
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $provider->getId();
     }
 
     /**
-     * @throws \PHPUnit\Framework\MockObject\Exception
+     * @throws Exception
      */
     public function testGetChannelName(): void
     {
         // Тестируем значение по умолчанию
-        $redis = $this->createMock(\Redis::class);
+        $redis = $this->createMock(Redis::class);
         $redis->method('isConnected')->willReturn(true);
         $provider = new QueueProvider($redis);
         $this->assertEquals('yii-queue', $provider->getChannelName());

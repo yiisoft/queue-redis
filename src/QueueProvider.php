@@ -7,6 +7,14 @@ namespace Yiisoft\Queue\Redis;
 use RedisException;
 use Yiisoft\Queue\Message\DelayEnvelope;
 use Yiisoft\Queue\Redis\Exception\NotConnectedRedisException;
+use Redis;
+use RuntimeException;
+
+use function is_array;
+use function is_bool;
+use function is_float;
+use function is_int;
+use function is_string;
 
 class QueueProvider implements QueueProviderInterface
 {
@@ -21,10 +29,9 @@ class QueueProvider implements QueueProviderInterface
      * @throws RedisException
      */
     public function __construct(
-        private \Redis $redis, //redis connection,
-        private string $channelName = self::DEFAULT_CHANNEL_NAME
-    ) {
-    }
+        private Redis $redis, //redis connection,
+        private string $channelName = self::DEFAULT_CHANNEL_NAME,
+    ) {}
 
     /**
      * @param array<string, array|bool|float|int|string|null> $meta
@@ -117,22 +124,6 @@ class QueueProvider implements QueueProviderInterface
     /**
      * @throws RedisException
      */
-    private function moveExpired(string $from): void
-    {
-        $now = time();
-        $expired = $this->redis->zrevrangebyscore($from, (string) $now, '-inf');
-        if (is_array($expired)) {
-            $this->redis->zremrangebyscore($from, '-inf', (string) $now);
-            /** @var string $id */
-            foreach ($expired as $id) {
-                $this->redis->rpush("$this->channelName.waiting", $id);
-            }
-        }
-    }
-
-    /**
-     * @throws RedisException
-     */
     public function getId(): int
     {
         $this->checkConnection();
@@ -141,7 +132,7 @@ class QueueProvider implements QueueProviderInterface
             return $id;
         }
 
-        throw new \RuntimeException('Unable to get message id.');
+        throw new RuntimeException('Unable to get message id.');
     }
 
     /**
@@ -164,6 +155,27 @@ class QueueProvider implements QueueProviderInterface
         return new self($this->redis, $channelName);
     }
 
+    public function getChannelName(): string
+    {
+        return $this->channelName;
+    }
+
+    /**
+     * @throws RedisException
+     */
+    private function moveExpired(string $from): void
+    {
+        $now = time();
+        $expired = $this->redis->zrevrangebyscore($from, (string) $now, '-inf');
+        if (is_array($expired)) {
+            $this->redis->zremrangebyscore($from, '-inf', (string) $now);
+            /** @var string $id */
+            foreach ($expired as $id) {
+                $this->redis->rpush("$this->channelName.waiting", $id);
+            }
+        }
+    }
+
     /**
      * @throws RedisException
      */
@@ -172,10 +184,5 @@ class QueueProvider implements QueueProviderInterface
         if (!$this->redis->isConnected()) {
             throw new NotConnectedRedisException('Redis is not connected.');
         }
-    }
-
-    public function getChannelName(): string
-    {
-        return $this->channelName;
     }
 }
