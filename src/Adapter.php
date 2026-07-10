@@ -12,15 +12,16 @@ use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\Message\Serializer\MessageSerializerInterface;
 use Yiisoft\Queue\MessageStatus;
 
+use function is_string;
+
 final class Adapter implements AdapterInterface
 {
     public function __construct(
         private QueueProviderInterface $provider,
         private MessageSerializerInterface $serializer,
         private LoopInterface $loop,
-        private int $timeout = 3
-    ) {
-    }
+        private int $timeout = 3,
+    ) {}
 
     public function runExisting(callable $handlerCallback): void
     {
@@ -90,6 +91,11 @@ final class Adapter implements AdapterInterface
         return $adapter;
     }
 
+    public function getChannel(): string
+    {
+        return $this->provider->getChannelName();
+    }
+
     private function reserve(): ?IdEnvelope
     {
         $reserve = $this->provider->reserve($this->timeout);
@@ -99,10 +105,5 @@ final class Adapter implements AdapterInterface
 
         $message = $this->serializer->unserialize($reserve->payload);
         return new IdEnvelope($message, $reserve->id);
-    }
-
-    public function getChannel(): string
-    {
-        return $this->provider->getChannelName();
     }
 }

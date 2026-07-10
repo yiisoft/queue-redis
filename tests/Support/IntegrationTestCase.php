@@ -27,18 +27,24 @@ use Yiisoft\Queue\Redis\QueueProvider;
 use Yiisoft\Queue\Worker\Worker;
 use Yiisoft\Queue\Worker\WorkerInterface;
 use Yiisoft\Test\Support\Container\SimpleContainer;
+use Redis;
+use RuntimeException;
+
+use function is_array;
+use function is_int;
+use function is_string;
 
 /**
  * Test case for unit tests
  */
 abstract class IntegrationTestCase extends TestCase
 {
-    protected Queue|null $queue = null;
+    public ?QueueProvider $queueProvider = null;
+    protected ?Queue $queue = null;
     protected ?WorkerInterface $worker = null;
     protected ?ContainerInterface $container = null;
     protected ?AdapterInterface $adapter = null;
     protected ?LoopInterface $loop = null;
-    public ?QueueProvider $queueProvider = null;
 
     protected function setUp(): void
     {
@@ -98,7 +104,7 @@ abstract class IntegrationTestCase extends TestCase
                     && is_array($data['payload'] ?? null)
                     && (is_int($data['payload']['time'] ?? null) || is_string($data['payload']['time'] ?? null))
                 ) {
-                    throw new \RuntimeException((string) $data['payload']['time']);
+                    throw new RuntimeException((string) $data['payload']['time']);
                 }
             },
         ];
@@ -166,9 +172,9 @@ abstract class IntegrationTestCase extends TestCase
         );
     }
 
-    protected function createConnection(): \Redis
+    protected function createConnection(): Redis
     {
-        $redis = new \Redis();
+        $redis = new Redis();
         $redis->connect('redis');
         return $redis;
     }

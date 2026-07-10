@@ -37,12 +37,14 @@
         "yiisoft/queue": "dev-master"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.95",
         "maglnet/composer-require-checker": "^4.7",
         "phpunit/phpunit": "^10.5",
-        "rector/rector": "^1.0.3",
+        "rector/rector": "^2.5.5",
         "roave/infection-static-analysis-plugin": "^1.34",
         "spatie/phpunit-watcher": "^1.23",
         "vimeo/psalm": "^5.16",
+        "yiisoft/code-style": "^1.0",
         "yiisoft/test-support": "^3.0"
     },
     "autoload": {
@@ -69,5 +71,10 @@
             "infection/extension-installer": true,
             "composer/package-versions-deprecated": true
         }
+    },
+    "scripts": {
+        "cs-fix": "php-cs-fixer fix",
+        "psalm": "psalm",
+        "rector": "rector"
     }
 }

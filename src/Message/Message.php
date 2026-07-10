@@ -21,7 +21,7 @@ final class Message implements MessageInterface
         private string $handlerName,
         private bool|int|float|string|array|null $payload,
         private array $meta,
-        private int $delay = 0 //delay in seconds
+        private int $delay = 0, //delay in seconds
     ) {
         if ($this->delay > 0) {
             $this->meta[DelayEnvelope::META_DELAY_SECONDS] = $delay;

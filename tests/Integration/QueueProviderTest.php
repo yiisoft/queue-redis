@@ -8,6 +8,9 @@ use PHPUnit\Framework\TestCase;
 use Yiisoft\Queue\Redis\Message\Message;
 use Yiisoft\Queue\Redis\QueueProvider;
 use Yiisoft\Queue\Redis\QueueProviderInterface;
+use Redis;
+
+use const JSON_THROW_ON_ERROR;
 
 class QueueProviderTest extends TestCase
 {
@@ -22,7 +25,7 @@ class QueueProviderTest extends TestCase
 
     public function test__construct(): QueueProvider
     {
-        $redis = new \Redis();
+        $redis = new Redis();
         $connected = $redis->connect('redis');
         $this->assertTrue($connected);
         $provider = new QueueProvider($redis, 'test');

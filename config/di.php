@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Yiisoft\Queue\Redis\QueueProvider;
+use Yiisoft\Queue\Redis\QueueProviderInterface;
+
 return [
-    Yiisoft\Queue\Redis\QueueProviderInterface::class => Yiisoft\Queue\Redis\QueueProvider::class,
+    QueueProviderInterface::class => QueueProvider::class,
 ];
