@@ -32,7 +32,6 @@
     "require": {
         "php": "^8.1",
         "ext-redis": "*",
-        "yiisoft/factory": "^1.0",
         "yiisoft/friendly-exception": "^1.0",
         "yiisoft/queue": "dev-master"
     },
