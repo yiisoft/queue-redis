@@ -14,6 +14,7 @@ use Yiisoft\Queue\Message\MessageInterface;
 final class Message implements MessageInterface
 {
     /**
+     * @psalm-param non-empty-string $handlerName
      * @psalm-param MessagePayload $payload
      * @psalm-param MessageMeta $meta
      */
@@ -72,6 +73,7 @@ final class Message implements MessageInterface
     }
 
     /**
+     * @psalm-param non-empty-string $type
      * @psalm-param MessagePayload $payload
      */
     public static function fromPayload(string $type, bool|int|float|string|array|null $payload): static

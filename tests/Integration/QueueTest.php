@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Queue\Redis\Tests\Integration;
 
-use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Message\Serializer\JsonMessageEncoder;
 use Yiisoft\Queue\Message\Serializer\MessageSerializer;
@@ -12,7 +11,6 @@ use Yiisoft\Queue\Message\GenericMessage as Message;
 use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\Message\Serializer\MessageSerializerInterface;
 use Yiisoft\Queue\MessageStatus;
-use Yiisoft\Queue\Queue;
 use Yiisoft\Queue\Redis\Adapter;
 use Yiisoft\Queue\Redis\QueueProvider;
 use Yiisoft\Queue\Redis\QueueProviderInterface;
@@ -29,7 +27,7 @@ class QueueTest extends IntegrationTestCase
         $fileName = 'test-run' . $time;
         $fileHelper = new FileHelper();
 
-        $queue = $this->getDefaultQueue($this->getAdapter());
+        $queue = $this->getProducer($this->getAdapter());
 
         $queue->push(
             new Message('ext-simple', ['file_name' => $fileName, 'payload' => ['time' => $time]]),
@@ -37,7 +35,7 @@ class QueueTest extends IntegrationTestCase
 
         self::assertNull($fileHelper->get($fileName));
 
-        $queue->run();
+        $this->getConsumer($this->getAdapter())->run();
 
         $result = $fileHelper->get($fileName);
         self::assertNotNull($result);
@@ -48,7 +46,7 @@ class QueueTest extends IntegrationTestCase
     {
         $adapter = $this->getAdapter();
 
-        $queue = $this->getDefaultQueue($adapter);
+        $queue = $this->getProducer($adapter);
 
         $message = new Message('ext-simple', null);
         $message = $queue->push(
@@ -58,7 +56,7 @@ class QueueTest extends IntegrationTestCase
         $status = $adapter->status($message->getId());
         $this->assertEquals(MessageStatus::WAITING, $status);
 
-        $queue->run();
+        $this->getConsumer($adapter)->run();
 
         $status = $adapter->status($message->getId());
         $this->assertEquals(MessageStatus::DONE, $status);
@@ -89,7 +87,7 @@ class QueueTest extends IntegrationTestCase
             new MessageSerializer(new JsonMessageEncoder()),
             $mockLoop,
         );
-        $queue = $this->getDefaultQueue($adapter);
+        $queue = $this->getProducer($adapter);
 
         $queue->push(
             new Message('ext-simple', ['file_name' => 'test-listen' . $time, 'payload' => ['time' => $time]]),
@@ -97,7 +95,7 @@ class QueueTest extends IntegrationTestCase
         $queue->push(
             new Message('ext-simple', ['file_name' => 'test-listen' . $time, 'payload' => ['time' => $time]]),
         );
-        $queue->listen();
+        $this->getConsumer($adapter)->listen();
     }
 
     public function testImmutable(): void
@@ -143,10 +141,5 @@ class QueueTest extends IntegrationTestCase
             $notUseHandler = false;
         });
         $this->assertTrue($notUseHandler);
-    }
-
-    private function getDefaultQueue(AdapterInterface $adapter): Queue
-    {
-        return $this->getQueueWithAdapter($adapter);
     }
 }
