@@ -61,6 +61,11 @@ final class Adapter implements AdapterInterface
         return MessageStatus::DONE;
     }
 
+    public function hasStatusSupport(): bool
+    {
+        return true;
+    }
+
     public function push(MessageInterface $message): MessageInterface
     {
         $payload = $this->serializer->serialize($message);
