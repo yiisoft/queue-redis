@@ -27,4 +27,4 @@ rector:			## Run rector.
 mutation:		## Run mutation tests.
 	make down
 	make build
-	docker compose -f tests/docker-compose.yml run php-cli ./vendor/bin/roave-infection-static-analysis-plugin
+	docker compose -f tests/docker-compose.yml run php-cli ./vendor/bin/infection
